@@ -29,8 +29,9 @@ int menu()
         {
             printf("Opcion invalida. Intente nuevamente.\n");
 
-            // Limpia el buffer por si el usuario ingresó letras
-            while (getchar() != '\n');
+            // Limpia el espacio de almacenamiento por si el usuario ingresó letras
+            while (getchar() != '\n')
+                ;
         }
 
     } while (valido != 1 || opcionN < 1 || opcionN > 7);
@@ -61,13 +62,13 @@ int ValidacionNumeros(const char mensaje[], char nom_prod[])
 
     do
     {
-        printf(mensaje, nom_prod);
+        printf(mensaje, nom_prod); 
         valido = scanf("%d", &numero);
 
         if (valido != 1 || numero < 0)
         {
             printf("Entrada invalida. Intente nuevamente.\n");
-            while (getchar() != '\n'); // Limpia basura del buffer
+            while (getchar() != '\n'); // Limpia basura del espacio de almacenamiento
         }
 
     } while (valido != 1 || numero < 0);
@@ -91,7 +92,8 @@ char ValidacionLetras(const char mensaje[])
         if (valido != 1 || (letra != 'S' && letra != 'N'))
         {
             printf("Entrada invalida. Ingrese S o N.\n");
-            while (getchar() != '\n');
+            while (getchar() != '\n')
+                ;
         }
 
     } while (letra != 'S' && letra != 'N');
@@ -134,9 +136,7 @@ int registrarInsumos(char *nom_insumos[], int inventario[], int totalInsumos)
         borrarSaltoLinea(nom_insumos[totalInsumos]);
 
         // Se pide la cantidad disponible del insumo
-        inventario[totalInsumos] = ValidacionNumeros(
-            "Cantidad disponible del insumo %s: ",
-            nom_insumos[totalInsumos]);
+        inventario[totalInsumos] = ValidacionNumeros("Cantidad disponible del insumo %s: ", nom_insumos[totalInsumos]);
 
         // Pregunta si desea ingresar otro insumo
         if (totalInsumos + 1 < MAX_INSUMOS)
@@ -145,8 +145,7 @@ int registrarInsumos(char *nom_insumos[], int inventario[], int totalInsumos)
         }
         else
         {
-            printf("Se alcanzo el maximo de insumos.\n");
-            continuar = 'N';
+            printf("Se alcanzo el maximo de insumos.\n"); continuar = 'N';
         }
 
         totalInsumos++;
@@ -170,8 +169,7 @@ int registrarProductosSistema(
     // Verificar que existan insumos antes de registrar productos
     if (*totalInsumos == 0)
     {
-        printf("\nAun no hay insumos registrados.\n");
-        continuar = ValidacionLetras("Desea registrar insumos ahora");
+        printf("\nAun no hay insumos registrados.\n"); continuar = ValidacionLetras("Desea registrar insumos ahora");
 
         if (continuar == 'S')
         {
@@ -193,52 +191,23 @@ int registrarProductosSistema(
         borrarSaltoLinea(nom_prod[totalProd]);
 
         // Tiempo de producción del producto
-        tiempo[totalProd] = ValidacionNumeros(
-            "Ingrese el tiempo de produccion (en minutos) del producto %s: ",
-            nom_prod[totalProd]);
+        tiempo[totalProd] = ValidacionNumeros("Ingrese el tiempo de produccion (en minutos) del producto %s: ", nom_prod[totalProd]);
 
         // Inicializar la fila de insumos del producto
-        for (int j = 0; j < MAX_INSUMOS; j++)
+        for (int j = 0; j < MAX_INSUMOS; j++){
             CantInsumosPorProducto[totalProd][j] = 0;
-
-        // Cuántos insumos utiliza este producto
-        int numInsumos = ValidacionNumeros(
-            "Cuantos insumos usa el producto %s: ",
-            nom_prod[totalProd]);
-
-        // Verificar si pide más insumos que los registrados
-        if (numInsumos > *totalInsumos)
-        {
-            printf("Numero mayor a insumos registrados (%d).\n", *totalInsumos);
-
-            // Permite corregir la cantidad
-            do
-            {
-                continuar = ValidacionLetras("Desea volver a ingresar la cantidad de insumos");
-                if (continuar == 'S')
-                {
-                    numInsumos = ValidacionNumeros(
-                        "Cuantos insumos usa el producto %s: ",
-                        nom_prod[totalProd]);
-                }
-            } while (continuar == 'S');
-
-            // También permite agregar más insumos si el usuario desea
-            do
-            {
-                continuar = ValidacionLetras("Desea agregar mas insumos");
-                if (continuar == 'S')
-                {
-                    *totalInsumos = registrarInsumos(nom_insumos, inventario, *totalInsumos);
-                }
-            } while (continuar == 'S' && *totalInsumos < MAX_INSUMOS);
         }
+        // Cuántos insumos utiliza este producto
+        int numInsumos;
+
+        // Pedir la cantidad de insumos hasta que sea válida
+            numInsumos = ValidacionNumeros("Cuantos insumos usa el producto %s: ", nom_prod[totalProd]);
 
         // Registro de cada insumo del producto
         for (int i = 0; i < numInsumos; i++)
         {
-            char nombreI[LEN_NOMBRE];
             int aux_indice = -1;
+            char nombreI[LEN_NOMBRE];
 
             do
             {
@@ -247,43 +216,28 @@ int registrarProductosSistema(
                 fgets(nombreI, LEN_NOMBRE, stdin);
                 borrarSaltoLinea(nombreI);
 
-                // Buscar insumo en la lista
                 aux_indice = buscarProducto(nom_insumos, *totalInsumos, nombreI);
 
                 if (aux_indice == -1)
                 {
-                    // Insumo no existe → permite agregarlo
-                    char agregar = ValidacionLetras("Desea agregar este insumo al inventario");
-
+                    char agregar = ValidacionLetras("Insumo no existe. Desea agregarlo al inventario");
                     if (agregar == 'S')
                     {
                         if (*totalInsumos < MAX_INSUMOS)
                         {
-                            // Guarda nuevo insumo
                             strcpy(nom_insumos[*totalInsumos], nombreI);
-
-                            inventario[*totalInsumos] = ValidacionNumeros(
-                                "Cantidad disponible del insumo %s: ",
-                                nom_insumos[*totalInsumos]);
-
+                            inventario[*totalInsumos] = ValidacionNumeros("Cantidad disponible del insumo %s: ", nom_insumos[*totalInsumos]);
                             aux_indice = *totalInsumos;
-
                             (*totalInsumos)++;
                             printf("Insumo agregado exitosamente.\n");
-                        }
-                        else
+                        }else
                         {
-                            printf("No se pueden agregar mas insumos.\n");
+                            printf("Se alcanzo el maximo de insumos.\n"); continuar = 'N';
                         }
-                    }
-                    else
-                    {
-                        printf("Intente con otro nombre de insumo.\n");
                     }
                 }
                 else if (CantInsumosPorProducto[totalProd][aux_indice] != 0)
                 {
-                    // Evita repetir el mismo insumo en un producto
                     printf("Ese insumo ya fue agregado para este producto.\n");
                     aux_indice = -1;
                 }
@@ -291,10 +245,7 @@ int registrarProductosSistema(
             } while (aux_indice == -1);
 
             // Cuántas unidades de ese insumo se requieren
-            int cantidadNecesaria = ValidacionNumeros(
-                "Cantidad necesaria de %s: ",
-                nom_insumos[aux_indice]);
-
+            int cantidadNecesaria = ValidacionNumeros("Cantidad necesaria de %s: ", nom_insumos[aux_indice]);
             CantInsumosPorProducto[totalProd][aux_indice] = cantidadNecesaria;
         }
 
@@ -317,9 +268,9 @@ int registrarProductosSistema(
 
 // EDITAR PRODUCTOS
 void editarProducto(char *nom_prod[], int tiempo[],
-    int CantInsumosPorProducto[][MAX_INSUMOS],
-    char *nom_insumos[], int inventario[],
-    int totalProd, int totalInsumos)
+                    int CantInsumosPorProducto[][MAX_INSUMOS],
+                    char *nom_insumos[], int inventario[],
+                    int totalProd, int *totalInsumos) // totalInsumos ahora puntero
 {
     if (!ValidacionProdExist(totalProd))
         return;
@@ -334,14 +285,24 @@ void editarProducto(char *nom_prod[], int tiempo[],
 
     if (aux_indice == -1)
     {
-        printf("Producto no encontrado.\n");
-        return;
+        printf("\nProducto no encontrado.\n");
+        char agregar = ValidacionLetras("Desea registrar este producto");
+        if (agregar != 'S') return;
+
+        // Crear nuevo producto
+        aux_indice = totalProd;
+        printf("\nIngrese el nombre del nuevo producto: ");
+        fflush(stdin);
+        fgets(nom_prod[aux_indice], LEN_NOMBRE, stdin);
+        borrarSaltoLinea(nom_prod[aux_indice]);
+
+        tiempo[aux_indice] = ValidacionNumeros("Ingrese el tiempo de produccion para %s: ", nom_prod[aux_indice]);
     }
 
     printf("Producto encontrado: %s\n", nom_prod[aux_indice]);
 
     // Editar nombre
-    char opcionL = ValidacionLetras("Desea editar el nombre del producto (S/N)");
+    char opcionL = ValidacionLetras("Desea editar el nombre del producto");
     if (opcionL == 'S')
     {
         printf("Ingrese el nuevo nombre del producto: ");
@@ -350,34 +311,44 @@ void editarProducto(char *nom_prod[], int tiempo[],
         borrarSaltoLinea(nom_prod[aux_indice]);
     }
 
-    // Editar tiempo de producción
-    opcionL = ValidacionLetras("Desea editar tiempo de produccion (S/N)");
+    // Editar tiempo
+    opcionL = ValidacionLetras("Desea editar tiempo de produccion");
     if (opcionL == 'S')
     {
-        tiempo[aux_indice] = ValidacionNumeros(
-            "Ingrese el nuevo tiempo (minutos) para '%s': ",
-            nom_prod[aux_indice]);
+        tiempo[aux_indice] = ValidacionNumeros("Ingrese el nuevo tiempo (minutos) para '%s': ", nom_prod[aux_indice]);
     }
 
     // Editar insumos
-    opcionL = ValidacionLetras("Desea editar los insumos del producto (S/N)");
+    opcionL = ValidacionLetras("Desea editar los insumos del producto");
     if (opcionL == 'S')
     {
         // Limpia insumos anteriores
         for (int j = 0; j < MAX_INSUMOS; j++)
             CantInsumosPorProducto[aux_indice][j] = 0;
 
-        int numInsumos = ValidacionNumeros(
-            "Cuantos insumos tendra ahora el producto %s: ",
-            nom_prod[aux_indice]);
+        int numInsumos;
 
-        if (numInsumos > totalInsumos)
+        // Pedir cantidad de insumos hasta que sea válida
+        do
         {
-            printf("Numero mayor a insumos registrados (%d). Se ajustara.\n", totalInsumos);
-            numInsumos = totalInsumos;
-        }
+            numInsumos = ValidacionNumeros("Cuantos insumos tendra ahora el producto %s: ", nom_prod[aux_indice]);
+            if (numInsumos > *totalInsumos)
+            {
+                printf("\nEl numero ingresado (%d) es mayor que los insumos registrados (%d).\n", numInsumos, *totalInsumos);
+                char opcion = ValidacionLetras("Desea volver a ingresar la cantidad de insumos");
+                if (opcion != 'S')
+                {
+                    printf("Debe registrar más insumos antes de continuar.\n");
+                    return; // Regresa al menú
+                }
+            }
+            else if (numInsumos <= 0)
+            {
+                printf("Debe ingresar una cantidad valida de insumos.\n");
+            }
+        } while (numInsumos > *totalInsumos || numInsumos <= 0);
 
-        // Registrar nuevamente insumos del producto
+        // Registrar insumos
         for (int i = 0; i < numInsumos; i++)
         {
             char nombreI[LEN_NOMBRE];
@@ -385,55 +356,47 @@ void editarProducto(char *nom_prod[], int tiempo[],
 
             do
             {
-                printf("Ingrese nombre del insumo #%d: ", i + 1);
+                printf("\nNombre del insumo #%d: ", i + 1);
                 fflush(stdin);
                 fgets(nombreI, LEN_NOMBRE, stdin);
                 borrarSaltoLinea(nombreI);
 
-                indice = buscarProducto(nom_insumos, totalInsumos, nombreI);
+                indice = buscarProducto(nom_insumos, *totalInsumos, nombreI);
 
                 if (indice == -1)
                 {
-                    printf("Insumo no encontrado.\n");
-
-                    char agregar = ValidacionLetras("Desea agregar este insumo al inventario");
-
+                    char agregar = ValidacionLetras("Insumo no existe. Desea agregarlo al inventario");
                     if (agregar == 'S')
                     {
-                        if (totalInsumos < MAX_INSUMOS)
+                        if (*totalInsumos < MAX_INSUMOS)
                         {
-                            strcpy(nom_insumos[totalInsumos], nombreI);
-
-                            inventario[totalInsumos] = ValidacionNumeros(
-                                "Cantidad disponible de '%s': ",
-                                nom_insumos[totalInsumos]);
-
-                            indice = totalInsumos;
-                            totalInsumos++;
+                            strcpy(nom_insumos[*totalInsumos], nombreI);
+                            inventario[*totalInsumos] = ValidacionNumeros("Cantidad disponible del insumo %s: ", nombreI);
+                            indice = *totalInsumos;
+                            (*totalInsumos)++;
                             printf("Insumo agregado exitosamente.\n");
                         }
                         else
                         {
-                            printf("No se pueden agregar mas insumos.\n");
+                            printf("No se pueden agregar más insumos.\n");
+                            indice = -1;
                         }
                     }
                     else
                     {
                         printf("Intente con otro nombre de insumo.\n");
+                        indice = -1;
                     }
                 }
                 else if (CantInsumosPorProducto[aux_indice][indice] != 0)
                 {
-                    printf("Ese insumo ya fue agregado.\n");
+                    printf("Ese insumo ya fue agregado para este producto.\n");
                     indice = -1;
                 }
 
             } while (indice == -1);
 
-            int cant = ValidacionNumeros(
-                "Cantidad necesaria de '%s': ",
-                nom_insumos[indice]);
-
+            int cant = ValidacionNumeros("Cantidad necesaria de '%s': ", nom_insumos[indice]);
             CantInsumosPorProducto[aux_indice][indice] = cant;
         }
     }
@@ -450,39 +413,57 @@ int eliminarProducto(char *nom_prod[],
     if (!ValidacionProdExist(totalProd))
         return totalProd;
 
-    char Prod_buscado[LEN_NOMBRE];
-    printf("\nIngrese el nombre del producto a eliminar: ");
-    fflush(stdin);
-    fgets(Prod_buscado, LEN_NOMBRE, stdin);
-    borrarSaltoLinea(Prod_buscado);
+    char intentarDeNuevo;
 
-    int aux_indice = buscarProducto(nom_prod, totalProd, Prod_buscado);
-
-    if (aux_indice == -1)
+    do
     {
-        printf("Producto no encontrado.\n");
-        return totalProd;
-    }
+        char Prod_buscado[LEN_NOMBRE];
 
-    // Se recorre y desplaza los productos posteriores para ocupar el espacio
-    for (int j = aux_indice; j < totalProd - 1; j++)
-    {
-        strcpy(nom_prod[j], nom_prod[j + 1]);
-        tiempo[j] = tiempo[j + 1];
+        printf("\nIngrese el nombre del producto a eliminar: ");
+        fflush(stdin);
+        fgets(Prod_buscado, LEN_NOMBRE, stdin);
+        borrarSaltoLinea(Prod_buscado);
 
-        for (int k = 0; k < MAX_INSUMOS; k++)
-            CantInsumosPorProducto[j][k] = CantInsumosPorProducto[j + 1][k];
-    }
+        int aux_indice = buscarProducto(nom_prod, totalProd, Prod_buscado);
 
-    // Limpia el último registro
-    nom_prod[totalProd - 1][0] = '\0';
-    tiempo[totalProd - 1] = 0;
+        if (aux_indice == -1)
+        {
+            printf("Producto no encontrado.\n");
 
-    for (int k = 0; k < MAX_INSUMOS; k++)
-        CantInsumosPorProducto[totalProd - 1][k] = 0;
+            intentarDeNuevo = ValidacionLetras("Desea ingresar otro producto para eliminar");
 
-    totalProd--;
-    printf("Producto eliminado correctamente.\n");
+            if (intentarDeNuevo == 'N')
+            {
+                printf("Regresando al menu...\n");
+                return totalProd;
+            }
+        }
+        else
+        {
+            // Se recorre y desplaza los productos posteriores para ocupar el espacio
+            for (int j = aux_indice; j < totalProd - 1; j++)
+            {
+                strcpy(nom_prod[j], nom_prod[j + 1]);
+                tiempo[j] = tiempo[j + 1];
+
+                for (int k = 0; k < MAX_INSUMOS; k++)
+                    CantInsumosPorProducto[j][k] = CantInsumosPorProducto[j + 1][k];
+            }
+
+            // Limpia el último registro
+            nom_prod[totalProd - 1][0] = '\0';
+            tiempo[totalProd - 1] = 0;
+
+            for (int k = 0; k < MAX_INSUMOS; k++)
+                CantInsumosPorProducto[totalProd - 1][k] = 0;
+
+            totalProd--;
+            printf("Producto eliminado correctamente.\n");
+
+            return totalProd;
+        }
+
+    } while (intentarDeNuevo == 'S'); // Condición
 
     return totalProd;
 }
@@ -506,21 +487,18 @@ void mostrarProductos(char *nom_prod[],
         printf("  Tiempo por unidad: %d minutos\n", tiempo[i]);
         printf("  Insumos necesarios:\n");
 
-        int any = 0;
+        int in_reg = 0;
 
         for (int j = 0; j < totalInsumos; j++)
         {
             if (CantInsumosPorProducto[i][j] > 0)
             {
-                printf("    - %s : %d unidades\n",
-                       nom_insumos[j],
-                       CantInsumosPorProducto[i][j]);
-
-                any = 1;
+                printf("    - %s : %d unidades\n", nom_insumos[j], CantInsumosPorProducto[i][j]);
+                in_reg = 1;
             }
         }
 
-        if (!any)
+        if (!in_reg)
             printf("    (No definio insumos para este producto)\n");
     }
 }
@@ -563,9 +541,7 @@ void VerificarDemanda(int CantInsumosPorProducto[][MAX_INSUMOS],
         {
             printf("Producto encontrado: %s\n", nom_prod[aux_indice]);
 
-            demanda[aux_indice] =
-                ValidacionNumeros("Cantidad demandada de %s: ",
-                                  nom_prod[aux_indice]);
+            demanda[aux_indice] = ValidacionNumeros("Cantidad demandada de %s: ", nom_prod[aux_indice]);
 
             productosSimulados++;
         }
@@ -588,9 +564,7 @@ void VerificarDemanda(int CantInsumosPorProducto[][MAX_INSUMOS],
         tiempoTotalReq += tiempo[i] * demanda[i];
 
     // Tiempo disponible para la simulación
-    int tiempoDisponible = ValidacionNumeros(
-        "\nIngrese el tiempo total disponible (en minutos): ",
-        "");
+    int tiempoDisponible = ValidacionNumeros("\nIngrese el tiempo total disponible (en minutos): ", "");
 
     // Calcular recursos necesarios
     int recursosNecesarios[MAX_INSUMOS] = {0};

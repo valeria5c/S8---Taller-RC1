@@ -270,7 +270,7 @@ int registrarProductosSistema(
 void editarProducto(char *nom_prod[], int tiempo[],
                     int CantInsumosPorProducto[][MAX_INSUMOS],
                     char *nom_insumos[], int inventario[],
-                    int totalProd, int *totalInsumos) // totalInsumos ahora puntero
+                    int totalProd, int *totalInsumos)
 {
     if (!ValidacionProdExist(totalProd))
         return;
@@ -652,3 +652,4 @@ void mostrarInventario(char *nom_insumos[], int inventario[], int totalInsumos)
                i + 1, nom_insumos[i], inventario[i]);
     }
 }
+

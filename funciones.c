@@ -14,8 +14,8 @@ int menu()
     {
         // Se muestra el menú principal
         printf("\n MENU\n");
-        printf("1. Registrar Inventario\n");
-        printf("2. Registrar Productos\n");
+        printf("1. Registrar Inventario (maximo 10 insumos)\n");
+        printf("2. Registrar Productos (maximo 5)\n");
         printf("3. Editar Productos\n");
         printf("4. Eliminar Productos\n");
         printf("5. Mostrar los Productos Registrados y el Iventario\n");
@@ -652,4 +652,5 @@ void mostrarInventario(char *nom_insumos[], int inventario[], int totalInsumos)
                i + 1, nom_insumos[i], inventario[i]);
     }
 }
+
 

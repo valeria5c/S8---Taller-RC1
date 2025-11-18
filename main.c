@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
+#include <ctype.h>
 #include "funciones.h"
 
 int main(int argc, char *argv[])
@@ -10,10 +10,10 @@ int main(int argc, char *argv[])
     // Arreglo donde realmente se guardan todos los nombres (insumos + productos)
     char almacenamiento_nombres[MAX_PRODUCTOS + MAX_INSUMOS][LEN_NOMBRE];
 
-    // Arreglo de punteros que apuntan a la zona de memoria de los insumos
+    // Arreglo de punteros que apuntan a la dirección de memoria de los insumos
     char *nom_insumos[MAX_INSUMOS];
 
-    // Arreglo de punteros que apuntan a la zona de memoria de los productos
+    // Arreglo de punteros que apuntan a la dirección de memoria de los productos
     char *nom_prod[MAX_PRODUCTOS];
 
     // Inventario disponible para cada insumo
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 
     int totalProd = 0; // Cantidad total de productos registrados
 
-    char continuar = 'S'; // Controla el ciclo principal del menú
+    char continuarMenu = 'S'; // Controla el ciclo principal del menú
 
     int demanda[MAX_PRODUCTOS] = {0}; // Demanda ingresada en la simulación
 
@@ -50,12 +50,13 @@ int main(int argc, char *argv[])
     // Bucle principal del menú
     do
     {
+        char continuar;
         opcionN = menu(); // Se llama al menú y se obtiene la opción seleccionada
 
         switch (opcionN)
         {
         case 1:
-            // Registrar insumos en el sistema
+            // Registrar el inventario en el sistema
             totalInsumos = registrarInsumos(nom_insumos, inventario, totalInsumos);
             break;
 
@@ -80,7 +81,7 @@ int main(int argc, char *argv[])
         case 3:
             // Permite editar un producto existente
             editarProducto(nom_prod, tiempo, CantInsumosPorProducto,
-                           nom_insumos, inventario, totalProd, totalInsumos);
+                           nom_insumos, inventario, totalProd, &totalInsumos);
             break;
 
         case 4:
@@ -104,8 +105,8 @@ int main(int argc, char *argv[])
             break;
 
         case 7:
-            printf("Saliendo del Programa...\n");
-            break;
+            printf("\nPrograma Finalizado...\n");
+            return 0;
 
         default:
             printf("Opcion Invalida");
@@ -113,9 +114,11 @@ int main(int argc, char *argv[])
         }
 
         // Pregunta para repetir el menú
-        continuar = ValidacionLetras("\nDesea regresar al menu");
+        continuarMenu = ValidacionLetras("\nDesea regresar al menu");
 
-    } while (continuar == 'S');
+    } while (continuarMenu == 'S');
+
+    printf("\nPrograma Finalizado...\n");
 
     return 0;
 }
